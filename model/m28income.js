@@ -15,11 +15,7 @@ const m28IncomeSchema = new Schema({
     type: Number,
     required: true
   },
-  usdAmt: {
-    type: Number,
-    required: true
-  },
-  polAmt: {
+  amount: {
     type: Number,
     required: true
   },

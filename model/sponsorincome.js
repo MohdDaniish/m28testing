@@ -11,11 +11,7 @@ const sponsorIncomeSchema = new Schema({
     type: String,
     required: true
   },
-  usdAmt: {
-    type: Number,
-    required: true
-  },
-  polAmt: {
+  amount: {
     type: Number,
     required: true
   },
@@ -25,7 +21,7 @@ const sponsorIncomeSchema = new Schema({
 });
 
 sponsorIncomeSchema.index(
-  { sender: 1, reciever: 1, usdAmt: 1, polAmt : 1, txHash: 1 },
+  { sender: 1, reciever: 1, amount: 1, txHash: 1 },
   { unique: true }
 );
 
