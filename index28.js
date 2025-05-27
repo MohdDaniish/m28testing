@@ -417,7 +417,6 @@ async function processEvents(events) {
           user: returnValues.user,
           packageId: returnValues.packageId,
           expiry: returnValues.expiry,
-          polAmt: returnValues.polAmt,
           txHash: transactionHash,
           block: blockNumber,
           timestamp: timestamp,
