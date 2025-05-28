@@ -15,6 +15,10 @@ const m28userplaceSchema = new Schema({
     type: Number,
     default: 0
   },
+  packageId: {
+    type: Number,
+    default: 0
+  },
   createdAt: {
     type: Date,
     default: Date.now
