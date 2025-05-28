@@ -4700,12 +4700,12 @@ async function todayincome (user) {
 
 // Map numeric rank to labels
 const rankMap = {
-  1: "silver",
-  2: "gold",
-  3: "platinum",
-  4: "diamond",
-  5: "crown",
-  6: "kohinoor"
+  1: "SILVER",
+  2: "GOLD",
+  3: "PLATINUM",
+  4: "DIAMOND",
+  5: "CROWN",
+  6: "KOHINOOR"
 };
 
 router.get("/communitytree", async (req, res) => {
