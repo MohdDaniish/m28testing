@@ -553,7 +553,7 @@ async function listEvent() {
   let lastSyncBlock = await getLastSyncBlock();
   let latestBlock = await web3.eth.getBlockNumber();
   let toBlock =
-    latestBlock > lastSyncBlock + 500 ? lastSyncBlock + 500 : latestBlock;
+    latestBlock > lastSyncBlock + 1000 ? lastSyncBlock + 1000 : latestBlock;
   //console.log(lastSyncBlock, toBlock);
   let events = await getEventReciept(lastSyncBlock, toBlock);
   //console.log("events", events.length);
