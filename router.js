@@ -4204,7 +4204,7 @@ router.post('/userDetails', async (req, res) => {
 });
 
 router.get('/userDetailsbyWallet', async (req, res) => {
-  const {userId} = req.query
+  const {userId, packageId = 1} = req.query
   try {
       // Find user details from registration schema by userId
       const userDetails = await registration.aggregate([
@@ -4347,6 +4347,11 @@ router.get('/userDetailsbyWallet', async (req, res) => {
       const autopoolinco = autores.length > 0 ? autores[0].totalIncome : 0;
       // autopool income
 
+       const subRankValue = await contract.methods
+              .currentRank(userId, packageId)
+              .call();
+            const subRankLabel = rankMap[parseInt(subRankValue)] || "unranked";
+
       res.status(200).send({
           userDetails: userDetails[0],
           directteam : directMembers,
@@ -4355,7 +4360,8 @@ router.get('/userDetailsbyWallet', async (req, res) => {
           recurrlevel : recurrlevincome,
           dividentincome : dividentinco,
           autopoolincome : autopoolinco,
-          todayBonus : todayinc
+          todayBonus : todayinc,
+          rank : subRankValue
       });
   } catch (error) {
       console.error('Error fetching user details:', error);
