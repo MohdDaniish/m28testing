@@ -40,6 +40,9 @@ const m28buy = require("./model/m28buy");
 const Withdrawmulti = require("./model/withdrawmultisend");
 const directpay = require("./model/directpayevent");
 const matrixpay = require("./model/matrixpayevent");
+const m28SponsorIncome = require("./model/m28sponsorincome");
+const levelupgrade = require("./model/levelupgrade");
+const upgradeincome = require("./model/upgradeincome");
 
 
 app.use(express.json());
@@ -342,7 +345,7 @@ async function processEvents(events) {
           const iswit = await globaldownline.create({  
           sender: returnValues.sender,
           receiver: returnValues.receiver,
-          amount : returnValues.usdAmt,
+          amount : returnValues.amount,
           level : returnValues.level,
           txHash: transactionHash,
           block: blockNumber,
@@ -358,7 +361,7 @@ async function processEvents(events) {
           const iswit = await globalupline.create({  
           sender: returnValues.sender,
           receiver: returnValues.receiver,
-          usdAmt : returnValues.usdAmt,
+          amount : returnValues.amount,
           packageId : returnValues.packageId,
           level : returnValues.level,
           txHash: transactionHash,
@@ -397,6 +400,19 @@ async function processEvents(events) {
       } catch (e) {
         console.log("Error (M28UserPlace Event) :", e.message);
       }
+    } else if (event == "M28SponcerIncome") {
+      try {
+        await m28SponsorIncome.create({
+          sender: returnValues.sender,
+          reciever: returnValues.reciever,
+          amount: returnValues.amount,
+          txHash: transactionHash,
+          block: blockNumber,
+          timestamp: timestamp,
+        });
+      } catch (e) {
+        console.log("Error (M28UserPlace Event) :", e.message);
+      }
     } else if (event == "m28Income") {
       try {
         await m28income.create({
@@ -418,6 +434,35 @@ async function processEvents(events) {
           user: returnValues.user,
           packageId: returnValues.packageId,
           expiry: returnValues.expiry,
+          txHash: transactionHash,
+          block: blockNumber,
+          timestamp: timestamp,
+        });
+      } catch (e) {
+        console.log("Error (M28UserPlace Event) :", e.message);
+      }
+    } else if (event == "levelUpgrade") {
+      try {
+        await levelupgrade.create({
+          user: returnValues.user,
+          packageId: returnValues.packageId,
+          level: returnValues.level,
+          amount: returnValues.amount,
+          txHash: transactionHash,
+          block: blockNumber,
+          timestamp: timestamp,
+        });
+      } catch (e) {
+        console.log("Error (M28UserPlace Event) :", e.message);
+      }
+    }  else if (event == "UpgradeIncome") {
+      try {
+        await upgradeincome.create({
+          sender: returnValues.sender,
+          receiver: returnValues.receiver,
+          packageId: returnValues.packageId,
+          level: returnValues.level,
+          amount: returnValues.amount,
           txHash: transactionHash,
           block: blockNumber,
           timestamp: timestamp,

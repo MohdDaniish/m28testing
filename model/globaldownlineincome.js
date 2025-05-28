@@ -10,11 +10,7 @@ const globaldownlineSchema = new Schema({
         type: String,
         required: true
     },
-    usdAmt: {
-        type: Number,
-        default : 0
-    },
-    polAmt: {
+    amount: {
         type: Number,
         default : 0
     },
