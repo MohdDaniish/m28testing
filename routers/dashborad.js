@@ -16,6 +16,7 @@ const m28buy = require("../model/m28buy");
 const m28income = require("../model/m28income");
 const globaldownline = require("../model/globaldownlineincome");
 const globalupline = require("../model/globaluplineincome");
+const sponsorincome = require("../model/sponsorincome");
 const crypto = require("crypto");
 // const registration = require("../model/registration");
 // const registration = require("../model/registration");
@@ -313,7 +314,7 @@ router.get("/Incomem28", async (req,res)=>{
 
 router.get("/sponsorIncome_ref28", async (req,res)=>{
   const {user} = req.query;
-  const data = await sponsorincome.find({receiver: user}).sort({ createdAt: -1 });
+  const data = await sponsorincome.find({reciever: user}).sort({ createdAt: -1 });
 
   const mergedData = await Promise.all(data.map(async (record) => {
     const userDetails = await registration.findOne({ user: record.sender }); // Assuming userId is stored in newuserplace records
