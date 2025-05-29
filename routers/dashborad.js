@@ -941,7 +941,7 @@ const getSurroundingUsersWithAmounts1 = async (myUid, myId) => {
     {
       $group: {
         _id: "$sender",
-        totalAmount: { $sum: "$usdAmt" }
+        totalAmount: { $sum: "$amount" }
       }
     }
   ]);
@@ -958,7 +958,7 @@ const getSurroundingUsersWithAmounts1 = async (myUid, myId) => {
     {
       $group: {
         _id: "$sender",
-        totalAmount: { $sum: "$usdAmt" }
+        totalAmount: { $sum: "$amount" }
       }
     }
   ]);
