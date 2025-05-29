@@ -4716,13 +4716,13 @@ const rankMap = {
 
 router.get("/communitytree", async (req, res) => {
   try {
-    let { user, packageId = 1} = req.query;
+    let { user, poolid = 1} = req.query;
 
     if (!user) {
       return res.status(400).json({ error: "user is required" });
     }
 
-    const matrixstruct = await m28userplace.find({ referrer: user , packageId : packageId }).limit(2);
+    const matrixstruct = await m28userplace.find({ referrer: user , packageId : poolid }).limit(2);
     const mergedRecords = [];
 
     for (const record of matrixstruct) {
