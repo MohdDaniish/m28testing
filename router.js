@@ -4716,7 +4716,7 @@ const rankMap = {
 
 router.get("/communitytree", async (req, res) => {
   try {
-    let { user, poolid = 1} = req.query;
+    let { user, poolid } = req.query;
 
     if (!user) {
       return res.status(400).json({ error: "user is required" });
