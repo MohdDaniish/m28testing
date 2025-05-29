@@ -4741,7 +4741,7 @@ router.get("/communitytree", async (req, res) => {
           children: [],
         };
 
-        const subChildren = await m28userplace.find({ referrer: record.user }).limit(2);
+        const subChildren = await m28userplace.find({ referrer: record.user, packageId : poolid }).limit(2);
 
         for (const subChild of subChildren) {
           const subChildUserRecord = await registration.findOne({ user: subChild.user });
