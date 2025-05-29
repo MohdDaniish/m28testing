@@ -355,7 +355,7 @@ router.get("/sponsorIncome_m28", async (req,res)=>{
   // res.json(data)
 })
 
-router.get("/levelUpgradeIncome", async (req,res)=>{
+router.get("/levelUpgrade", async (req,res)=>{
   const {user} = req.query;
   const data = await levelupgrade.find({user: user}).sort({ createdAt: -1 }).limit(100);
 
