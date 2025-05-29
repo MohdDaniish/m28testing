@@ -4204,7 +4204,7 @@ router.post('/userDetails', async (req, res) => {
 });
 
 router.get('/userDetailsbyWallet', async (req, res) => {
-  const {userId, packageId = 1} = req.query
+  const {userId, packageId } = req.query
   try {
       // Find user details from registration schema by userId
       const userDetails = await registration.aggregate([
