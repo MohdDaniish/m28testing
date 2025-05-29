@@ -4361,7 +4361,7 @@ router.get('/userDetailsbyWallet', async (req, res) => {
           dividentincome : dividentinco,
           autopoolincome : autopoolinco,
           todayBonus : todayinc,
-          rank : subRankValue
+          rank : subRankLabel
       });
   } catch (error) {
       console.error('Error fetching user details:', error);
