@@ -18,6 +18,9 @@ const globaldownline = require("../model/globaldownlineincome");
 const globalupline = require("../model/globaluplineincome");
 const sponsorincome = require("../model/sponsorincome");
 const crypto = require("crypto");
+const m28SponsorIncome = require("../model/m28sponsorincome");
+const levelupgrade = require("../model/levelupgrade");
+const upgradeincome = require("../model/upgradeincome");
 // const registration = require("../model/registration");
 // const registration = require("../model/registration");
 // const registration = require("../model/registration");
@@ -294,7 +297,7 @@ router.get("/Income", async (req,res)=>{
 
 router.get("/Incomem28", async (req,res)=>{
   const {user} = req.query;
-  const data = await m28income.find({receiver: user}).sort({ createdAt: -1 });
+  const data = await m28income.find({receiver: user}).sort({ createdAt: -1 }).limit(100);
 
   const mergedData = await Promise.all(data.map(async (record) => {
     const userDetails = await registration.findOne({ user: record.sender }); // Assuming userId is stored in newuserplace records
@@ -312,9 +315,9 @@ router.get("/Incomem28", async (req,res)=>{
   // res.json(data)
 })
 
-router.get("/sponsorIncome_ref28", async (req,res)=>{
+router.get("/sponsorIncome_ref_m28", async (req,res)=>{
   const {user} = req.query;
-  const data = await sponsorincome.find({reciever: user}).sort({ createdAt: -1 });
+  const data = await sponsorincome.find({reciever: user}).sort({ createdAt: -1 }).limit(100);
 
   const mergedData = await Promise.all(data.map(async (record) => {
     const userDetails = await registration.findOne({ user: record.sender }); // Assuming userId is stored in newuserplace records
@@ -330,6 +333,53 @@ router.get("/sponsorIncome_ref28", async (req,res)=>{
   // Step 4: Return the merged data as a JSON response
   res.json(mergedData);
   // res.json(data)
+})
+
+router.get("/sponsorIncome_m28", async (req,res)=>{
+  const {user} = req.query;
+  const data = await m28SponsorIncome.find({reciever: user}).sort({ createdAt: -1 }).limit(100);
+
+  const mergedData = await Promise.all(data.map(async (record) => {
+    const userDetails = await registration.findOne({ user: record.sender }); // Assuming userId is stored in newuserplace records
+    // console.log(userDetails)
+
+    // Step 3: Merge the user details with the newuserplace record
+    return {
+      ...record.toObject(), // Convert Mongoose document to plain JavaScript object
+      userId: userDetails ? userDetails.userId : null // Add user details to the record
+    };
+  }));
+
+  // Step 4: Return the merged data as a JSON response
+  res.json(mergedData);
+  // res.json(data)
+})
+
+router.get("/levelUpgradeIncome", async (req,res)=>{
+  const {user} = req.query;
+  const data = await levelupgrade.find({user: user}).sort({ createdAt: -1 }).limit(100);
+
+  res.json(data);
+  // res.json(data)
+})
+
+router.get("/upgradeIncome", async (req,res)=>{
+  const {user} = req.query;
+  const data = await upgradeincome.find({receiver: user}).sort({ createdAt: -1 }).limit(100);
+
+ const mergedData = await Promise.all(data.map(async (record) => {
+    const userDetails = await registration.findOne({ user: record.sender }); // Assuming userId is stored in newuserplace records
+    // console.log(userDetails)
+
+    // Step 3: Merge the user details with the newuserplace record
+    return {
+      ...record.toObject(), // Convert Mongoose document to plain JavaScript object
+      userId: userDetails ? userDetails.userId : null // Add user details to the record
+    };
+  }));
+
+  // Step 4: Return the merged data as a JSON response
+  res.json(mergedData);
 })
 
 router.get("/newuserplace", async (req,res)=>{
