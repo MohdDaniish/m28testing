@@ -19,6 +19,10 @@ const levelUpgradeSchema = new Schema({
     type: Number,
     required: true
   },
+  tyyp: {
+    type: String,
+    required: true
+  },
   txHash: { type: String, required: true, },
   block: { type: Number, required: true },
   timestamp: { type: Number, required: true },

@@ -450,6 +450,7 @@ async function processEvents(events) {
           packageId: returnValues.packageId,
           level: returnValues.level,
           amount: returnValues.amount,
+          tyyp: returnValues.tyyp,
           txHash: transactionHash,
           block: blockNumber,
           timestamp: timestamp,
