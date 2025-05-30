@@ -43,6 +43,7 @@ const matrixpay = require("./model/matrixpayevent");
 const m28SponsorIncome = require("./model/m28sponsorincome");
 const levelupgrade = require("./model/levelupgrade");
 const upgradeincome = require("./model/upgradeincome");
+const upgradetransfer = require("./model/upgradetransfer");
 
 
 app.use(express.json());
@@ -495,6 +496,19 @@ async function processEvents(events) {
         }
       } catch (e) {
         console.log("Error (withdraw Multisend Event) :", e.message);
+      }
+    } else if (event == "UpgradeTransfer") {
+      try {
+        const iswit = await upgradetransfer.create({
+          user: returnValues.user,
+          amount: returnValues.usdAmt,
+          txHash: transactionHash,
+          block: blockNumber,
+          timestamp: timestamp,
+        });
+    
+      } catch (e) {
+        console.log("Error (UpgradeTransfer Event) :", e.message);
       }
     }
   }
