@@ -873,7 +873,7 @@ const getUserIncomeSummary = async (user) => {
     // Total sum of usdAmt for the user
     const totalIncome = await m28income.aggregate([
       { $match: { receiver: user } },
-      { $group: { _id: null, totalUsdAmt: { $sum: "$usdAmt" } } }
+      { $group: { _id: null, totalUsdAmt: { $sum: "$amount" } } }
     ]);
 
     // Separate sum for packageId 1, 2, 3
@@ -882,7 +882,7 @@ const getUserIncomeSummary = async (user) => {
       {
         $group: {
           _id: "$packageId",
-          totalUsdAmt: { $sum: "$usdAmt" }
+          totalUsdAmt: { $sum: "$amount" }
         }
       }
     ]);
