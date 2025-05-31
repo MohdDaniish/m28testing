@@ -44,6 +44,7 @@ const m28SponsorIncome = require("./model/m28sponsorincome");
 const levelupgrade = require("./model/levelupgrade");
 const upgradeincome = require("./model/upgradeincome");
 const upgradetransfer = require("./model/upgradetransfer");
+const addupgradebalance = require("./model/addupgradebalance");
 
 
 app.use(express.json());
@@ -501,7 +502,7 @@ async function processEvents(events) {
       try {
         const iswit = await upgradetransfer.create({
           user: returnValues.user,
-          amount: returnValues.usdAmt,
+          amount: returnValues.amount,
           txHash: transactionHash,
           block: blockNumber,
           timestamp: timestamp,
@@ -509,6 +510,19 @@ async function processEvents(events) {
     
       } catch (e) {
         console.log("Error (UpgradeTransfer Event) :", e.message);
+      }
+    } else if (event == "upgradeBalance") {
+      try {
+        const iswit = await addupgradebalance.create({
+          user: returnValues.user,
+          amount: returnValues.amount,
+          txHash: transactionHash,
+          block: blockNumber,
+          timestamp: timestamp,
+        });
+    
+      } catch (e) {
+        console.log("Error (upgradeBalance Event) :", e.message);
       }
     }
   }
