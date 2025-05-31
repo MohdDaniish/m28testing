@@ -870,53 +870,62 @@ router.get("/UserWithdrawDetails", async (req, res) => {
 
 const getUserIncomeSummary = async (user) => {
   try {
-    // Total income from m28income
-    const totalIncome = await m28income.aggregate([
-      { $match: { receiver: user } },
-      { $group: { _id: null, totalUsdAmt: { $sum: "$amount" } } }
-    ]);
-
-    // Package-wise income from m28income
-    const packageWiseIncome = await m28income.aggregate([
-      { $match: { receiver: user, packageId: { $in: [1, 2, 3] } } },
-      {
-        $group: {
-          _id: "$packageId",
-          totalUsdAmt: { $sum: "$amount" }
+    const getPackageWiseIncome = async (model) => {
+      return await model.aggregate([
+        { $match: { receiver: user, packageId: { $in: [1, 2, 3] } } },
+        {
+          $group: {
+            _id: "$packageId",
+            totalUsdAmt: { $sum: "$amount" }
+          }
         }
-      }
+      ]);
+    };
+
+    const getTotalIncome = async (model) => {
+      const total = await model.aggregate([
+        { $match: { receiver: user } },
+        { $group: { _id: null, totalUsdAmt: { $sum: "$amount" } } }
+      ]);
+      return total[0]?.totalUsdAmt || 0;
+    };
+
+    // Get total income from all three schemas
+    const [m28Total, sponsorTotal, m28SponsorTotal] = await Promise.all([
+      getTotalIncome(m28income),
+      getTotalIncome(sponsorincome),
+      getTotalIncome(m28SponsorIncome),
     ]);
 
-    // Format package-wise result
-    const incomeByPackage = {
+    // Get package-wise income from all three schemas
+    const [m28Packages, sponsorPackages, m28SponsorPackages] = await Promise.all([
+      getPackageWiseIncome(m28income),
+      getPackageWiseIncome(sponsorincome),
+      getPackageWiseIncome(m28SponsorIncome),
+    ]);
+
+    // Combine all package-wise incomes
+    const combinedPackages = {
       package1: 0,
       package2: 0,
       package3: 0,
     };
 
-    packageWiseIncome.forEach(pkg => {
-      if (pkg._id === 1) incomeByPackage.package1 = pkg.totalUsdAmt;
-      if (pkg._id === 2) incomeByPackage.package2 = pkg.totalUsdAmt;
-      if (pkg._id === 3) incomeByPackage.package3 = pkg.totalUsdAmt;
-    });
+    const addPackageIncome = (packages) => {
+      packages.forEach(pkg => {
+        if (pkg._id === 1) combinedPackages.package1 += pkg.totalUsdAmt;
+        if (pkg._id === 2) combinedPackages.package2 += pkg.totalUsdAmt;
+        if (pkg._id === 3) combinedPackages.package3 += pkg.totalUsdAmt;
+      });
+    };
 
-    // Income from sponsorincome
-    const sponsorIncome = await sponsorincome.aggregate([
-      { $match: { reciever: user } },
-      { $group: { _id: null, totalSponsorAmt: { $sum: "$amount" } } }
-    ]);
-
-    // Income from m28sponsorincome
-    const m28SponsorIncme = await m28SponsorIncome.aggregate([
-      { $match: { reciever: user } },
-      { $group: { _id: null, totalM28SponsorAmt: { $sum: "$amount" } } }
-    ]);
+    addPackageIncome(m28Packages);
+    addPackageIncome(sponsorPackages);
+    addPackageIncome(m28SponsorPackages);
 
     return {
-      totalIncome: totalIncome[0]?.totalUsdAmt || 0 + sponsorIncome[0]?.totalSponsorAmt || 0 + m28SponsorIncme[0]?.totalM28SponsorAmt || 0,
-      sponsorIncome: sponsorIncome[0]?.totalSponsorAmt || 0,
-      m28SponsorIncome: m28SponsorIncme[0]?.totalM28SponsorAmt || 0,
-      ...incomeByPackage
+      totalIncome: m28Total + sponsorTotal + m28SponsorTotal,
+      ...combinedPackages
     };
 
   } catch (err) {
@@ -924,6 +933,7 @@ const getUserIncomeSummary = async (user) => {
     throw err;
   }
 };
+
 
 
 const getUserIncomeSummaryy = async (user) => {
