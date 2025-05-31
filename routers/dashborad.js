@@ -913,7 +913,7 @@ const getUserIncomeSummary = async (user) => {
     ]);
 
     return {
-      totalIncome: totalIncome[0]?.totalUsdAmt || 0,
+      totalIncome: totalIncome[0]?.totalUsdAmt || 0 + sponsorIncome[0]?.totalSponsorAmt || 0 + m28SponsorIncme[0]?.totalM28SponsorAmt || 0,
       sponsorIncome: sponsorIncome[0]?.totalSponsorAmt || 0,
       m28SponsorIncome: m28SponsorIncme[0]?.totalM28SponsorAmt || 0,
       ...incomeByPackage
