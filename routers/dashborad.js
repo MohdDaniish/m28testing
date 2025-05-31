@@ -868,7 +868,7 @@ router.get("/UserWithdrawDetails", async (req, res) => {
   }
 });
 
-const getUserIncomeSummary = async (user) => {
+const getUserIncomeSummaryy = async (user) => {
   try {
     // Total sum of usdAmt for the user
     const totalIncome = await m28income.aggregate([
@@ -903,6 +903,63 @@ const getUserIncomeSummary = async (user) => {
     return {
       totalIncome: totalIncome[0]?.totalUsdAmt || 0,
       ...incomeByPackage
+    };
+
+  } catch (err) {
+    console.error("Error while aggregating income:", err);
+    throw err;
+  }
+};
+
+
+const getUserIncomeSummary = async (user) => {
+  try {
+    const getTotalAndPackageIncome = async (model) => {
+      const total = await model.aggregate([
+        { $match: { receiver: user } },
+        { $group: { _id: null, totalAmt: { $sum: "$amount" } } }
+      ]);
+
+      const packageWise = await model.aggregate([
+        { $match: { receiver: user, packageId: { $in: [1, 2, 3] } } },
+        {
+          $group: {
+            _id: "$packageId",
+            totalAmt: { $sum: "$amount" }
+          }
+        }
+      ]);
+
+      const packageIncome = { package1: 0, package2: 0, package3: 0 };
+      packageWise.forEach(pkg => {
+        if (pkg._id === 1) packageIncome.package1 = pkg.totalAmt;
+        if (pkg._id === 2) packageIncome.package2 = pkg.totalAmt;
+        if (pkg._id === 3) packageIncome.package3 = pkg.totalAmt;
+      });
+
+      return {
+        total: total[0]?.totalAmt || 0,
+        ...packageIncome
+      };
+    };
+
+    // Get income details from all three schemas
+    const m28IncomeData = await getTotalAndPackageIncome(m28income);
+    const sponsorIncomeData = await getTotalAndPackageIncome(sponsorincome);
+    const m28SponsorIncomeData = await getTotalAndPackageIncome(m28SponsorIncome);
+
+    // Combine package-wise income across all schemas
+    const combinedPackages = {
+      package1: m28IncomeData.package1 + sponsorIncomeData.package1 + m28SponsorIncomeData.package1,
+      package2: m28IncomeData.package2 + sponsorIncomeData.package2 + m28SponsorIncomeData.package2,
+      package3: m28IncomeData.package3 + sponsorIncomeData.package3 + m28SponsorIncomeData.package3,
+    };
+
+    return {
+      totalIncome: m28IncomeData.total,
+      sponsorIncome: sponsorIncomeData.total,
+      m28SponsorIncome: m28SponsorIncomeData.total,
+      ...combinedPackages
     };
 
   } catch (err) {
