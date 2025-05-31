@@ -868,6 +868,64 @@ router.get("/UserWithdrawDetails", async (req, res) => {
   }
 });
 
+const getUserIncomeSummarylala = async (user) => {
+  try {
+    // Total income from m28income
+    const totalIncome = await m28income.aggregate([
+      { $match: { receiver: user } },
+      { $group: { _id: null, totalUsdAmt: { $sum: "$amount" } } }
+    ]);
+
+    // Package-wise income from m28income
+    const packageWiseIncome = await m28income.aggregate([
+      { $match: { receiver: user, packageId: { $in: [1, 2, 3] } } },
+      {
+        $group: {
+          _id: "$packageId",
+          totalUsdAmt: { $sum: "$amount" }
+        }
+      }
+    ]);
+
+    // Format package-wise result
+    const incomeByPackage = {
+      package1: 0,
+      package2: 0,
+      package3: 0,
+    };
+
+    packageWiseIncome.forEach(pkg => {
+      if (pkg._id === 1) incomeByPackage.package1 = pkg.totalUsdAmt;
+      if (pkg._id === 2) incomeByPackage.package2 = pkg.totalUsdAmt;
+      if (pkg._id === 3) incomeByPackage.package3 = pkg.totalUsdAmt;
+    });
+
+    // Income from sponsorincome
+    const sponsorIncome = await sponsorincome.aggregate([
+      { $match: { reciever: user } },
+      { $group: { _id: null, totalSponsorAmt: { $sum: "$amount" } } }
+    ]);
+
+    // Income from m28sponsorincome
+    const m28SponsorIncome = await m28SponsorIncome.aggregate([
+      { $match: { reciever: user } },
+      { $group: { _id: null, totalM28SponsorAmt: { $sum: "$amount" } } }
+    ]);
+
+    return {
+      totalIncome: totalIncome[0]?.totalUsdAmt || 0,
+      sponsorIncome: sponsorIncome[0]?.totalSponsorAmt || 0,
+      m28SponsorIncome: m28SponsorIncome[0]?.totalM28SponsorAmt || 0,
+      ...incomeByPackage
+    };
+
+  } catch (err) {
+    console.error("Error while aggregating income:", err);
+    throw err;
+  }
+};
+
+
 const getUserIncomeSummaryy = async (user) => {
   try {
     // Total sum of usdAmt for the user
