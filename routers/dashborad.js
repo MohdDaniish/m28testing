@@ -870,9 +870,9 @@ router.get("/UserWithdrawDetails", async (req, res) => {
 
 const getUserIncomeSummary = async (user) => {
   try {
-    const getPackageWiseIncome = async (model) => {
+    const getPackageWiseIncome = async (model, receiverField) => {
       return await model.aggregate([
-        { $match: { receiver: user, packageId: { $in: [1, 2, 3] } } },
+        { $match: { [receiverField]: user, packageId: { $in: [1, 2, 3] } } },
         {
           $group: {
             _id: "$packageId",
@@ -882,9 +882,9 @@ const getUserIncomeSummary = async (user) => {
       ]);
     };
 
-    const getTotalIncome = async (model) => {
+    const getTotalIncome = async (model, receiverField) => {
       const total = await model.aggregate([
-        { $match: { receiver: user } },
+        { $match: { [receiverField]: user } },
         { $group: { _id: null, totalUsdAmt: { $sum: "$amount" } } }
       ]);
       return total[0]?.totalUsdAmt || 0;
@@ -892,16 +892,16 @@ const getUserIncomeSummary = async (user) => {
 
     // Get total income from all three schemas
     const [m28Total, sponsorTotal, m28SponsorTotal] = await Promise.all([
-      getTotalIncome(m28income),
-      getTotalIncome(sponsorincome),
-      getTotalIncome(m28SponsorIncome),
+      getTotalIncome(m28income, 'receiver'),
+      getTotalIncome(sponsorincome, 'reciever'),
+      getTotalIncome(m28SponsorIncome, 'reciever'),
     ]);
 
     // Get package-wise income from all three schemas
     const [m28Packages, sponsorPackages, m28SponsorPackages] = await Promise.all([
-      getPackageWiseIncome(m28income),
-      getPackageWiseIncome(sponsorincome),
-      getPackageWiseIncome(m28SponsorIncome),
+      getPackageWiseIncome(m28income, 'receiver'),
+      getPackageWiseIncome(sponsorincome, 'reciever'),
+      getPackageWiseIncome(m28SponsorIncome, 'reciever'),
     ]);
 
     // Combine all package-wise incomes
@@ -933,6 +933,7 @@ const getUserIncomeSummary = async (user) => {
     throw err;
   }
 };
+
 
 
 
