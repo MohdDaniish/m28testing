@@ -868,7 +868,7 @@ router.get("/UserWithdrawDetails", async (req, res) => {
   }
 });
 
-const getUserIncomeSummarylala = async (user) => {
+const getUserIncomeSummary = async (user) => {
   try {
     // Total income from m28income
     const totalIncome = await m28income.aggregate([
@@ -907,7 +907,7 @@ const getUserIncomeSummarylala = async (user) => {
     ]);
 
     // Income from m28sponsorincome
-    const m28SponsorIncome = await m28SponsorIncome.aggregate([
+    const m28SponsorIncme = await m28SponsorIncome.aggregate([
       { $match: { reciever: user } },
       { $group: { _id: null, totalM28SponsorAmt: { $sum: "$amount" } } }
     ]);
@@ -915,7 +915,7 @@ const getUserIncomeSummarylala = async (user) => {
     return {
       totalIncome: totalIncome[0]?.totalUsdAmt || 0,
       sponsorIncome: sponsorIncome[0]?.totalSponsorAmt || 0,
-      m28SponsorIncome: m28SponsorIncome[0]?.totalM28SponsorAmt || 0,
+      m28SponsorIncome: m28SponsorIncme[0]?.totalM28SponsorAmt || 0,
       ...incomeByPackage
     };
 
@@ -970,7 +970,7 @@ const getUserIncomeSummaryy = async (user) => {
 };
 
 
-const getUserIncomeSummary = async (user) => {
+const getUserIncomeSummarsasdy = async (user) => {
   try {
     const getTotalAndPackageIncome = async (model) => {
       const total = await model.aggregate([
